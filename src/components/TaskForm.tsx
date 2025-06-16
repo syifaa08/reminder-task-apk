@@ -38,24 +38,24 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, onCancel }) => {
   };
 
   const categories = [
-    { value: 'personal', label: 'Personal', color: 'bg-green-500' },
-    { value: 'work', label: 'Work', color: 'bg-blue-500' },
-    { value: 'school', label: 'School', color: 'bg-purple-500' },
+    { value: 'personal', label: 'Pribadi', color: 'bg-green-500' },
+    { value: 'work', label: 'Kerja', color: 'bg-blue-500' },
+    { value: 'school', label: 'Sekolah', color: 'bg-purple-500' },
   ];
 
   const reminderOptions = [
-    { value: 5, label: '5 minutes before' },
-    { value: 15, label: '15 minutes before' },
-    { value: 30, label: '30 minutes before' },
-    { value: 60, label: '1 hour before' },
-    { value: 1440, label: '1 day before' },
+    { value: 5, label: '5 menit sebelumnya' },
+    { value: 15, label: '15 menit sebelumnya' },
+    { value: 30, label: '30 menit sebelumnya' },
+    { value: 60, label: '1 jam sebelumnya' },
+    { value: 1440, label: '1 hari sebelumnya' },
   ];
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-lg font-semibold">Add New Task</CardTitle>
+          <CardTitle className="text-lg font-semibold">Tambah Tugas Baru</CardTitle>
           <Button variant="ghost" size="sm" onClick={onCancel}>
             <X className="w-4 h-4" />
           </Button>
@@ -64,10 +64,10 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, onCancel }) => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Task Title *
+                Judul Tugas *
               </label>
               <Input
-                placeholder="Enter task title"
+                placeholder="Masukkan judul tugas"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 required
@@ -76,10 +76,10 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, onCancel }) => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description
+                Deskripsi
               </label>
               <Textarea
-                placeholder="Enter task description"
+                placeholder="Masukkan deskripsi tugas"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={3}
@@ -90,7 +90,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, onCancel }) => {
               <div>
                 <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
                   <Calendar className="w-4 h-4 mr-1" />
-                  Due Date *
+                  Tanggal Jatuh Tempo *
                 </label>
                 <Input
                   type="date"
@@ -103,7 +103,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, onCancel }) => {
               <div>
                 <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
                   <Clock className="w-4 h-4 mr-1" />
-                  Due Time
+                  Waktu Jatuh Tempo
                 </label>
                 <Input
                   type="time"
@@ -116,7 +116,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, onCancel }) => {
             <div>
               <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                 <Tag className="w-4 h-4 mr-1" />
-                Category
+                Kategori
               </label>
               <div className="grid grid-cols-3 gap-2">
                 {categories.map((category) => (
@@ -138,7 +138,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, onCancel }) => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Reminder
+                Pengingat
               </label>
               <select
                 value={formData.reminderMinutes}
@@ -155,10 +155,10 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, onCancel }) => {
 
             <div className="flex gap-2 pt-4">
               <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
-                Cancel
+                Batal
               </Button>
               <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700">
-                Add Task
+                Tambah Tugas
               </Button>
             </div>
           </form>

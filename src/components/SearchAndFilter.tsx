@@ -18,10 +18,10 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   onCategoryChange,
 }) => {
   const categories = [
-    { value: 'all', label: 'All' },
-    { value: 'personal', label: 'Personal' },
-    { value: 'work', label: 'Work' },
-    { value: 'school', label: 'School' },
+    { value: 'all', label: 'Semua' },
+    { value: 'personal', label: 'Pribadi' },
+    { value: 'work', label: 'Kerja' },
+    { value: 'school', label: 'Sekolah' },
   ];
 
   return (
@@ -29,7 +29,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
         <Input
-          placeholder="Search tasks..."
+          placeholder="Cari tugas..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
           className="pl-10"

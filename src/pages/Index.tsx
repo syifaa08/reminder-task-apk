@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Calendar, Flag, Trash2, Check, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -102,8 +101,8 @@ const Index = () => {
     
     setShowTaskForm(false);
     toast({
-      title: "Task Added",
-      description: `"${newTask.title}" has been added successfully.`,
+      title: "Tugas Ditambahkan",
+      description: `"${newTask.title}" berhasil ditambahkan.`,
     });
   };
 
@@ -124,25 +123,25 @@ const Index = () => {
     setTasks(prev => prev.filter(task => task.id !== id));
     await cancelTaskNotification(id);
     toast({
-      title: "Task Deleted",
-      description: "Task has been removed successfully.",
+      title: "Tugas Dihapus",
+      description: "Tugas berhasil dihapus.",
     });
   };
 
   const getCategoryInfo = (category: string) => {
     switch (category) {
-      case 'work': return { color: 'bg-blue-50 text-blue-700 border-blue-200', label: 'Work' };
-      case 'school': return { color: 'bg-purple-50 text-purple-700 border-purple-200', label: 'School' };
-      case 'personal': return { color: 'bg-green-50 text-green-700 border-green-200', label: 'Personal' };
+      case 'work': return { color: 'bg-blue-50 text-blue-700 border-blue-200', label: 'Kerja' };
+      case 'school': return { color: 'bg-purple-50 text-purple-700 border-purple-200', label: 'Sekolah' };
+      case 'personal': return { color: 'bg-green-50 text-green-700 border-green-200', label: 'Pribadi' };
       default: return { color: 'bg-gray-50 text-gray-700 border-gray-200', label: category };
     }
   };
 
   const getUrgencyInfo = (dueDate: Date, completed: boolean) => {
-    if (completed) return { color: 'text-green-600', label: 'Completed' };
-    if (isPast(dueDate) && !isToday(dueDate)) return { color: 'text-red-600', label: 'Overdue' };
-    if (isToday(dueDate)) return { color: 'text-orange-600', label: 'Due Today' };
-    return { color: 'text-gray-600', label: 'Upcoming' };
+    if (completed) return { color: 'text-green-600', label: 'Selesai' };
+    if (isPast(dueDate) && !isToday(dueDate)) return { color: 'text-red-600', label: 'Terlambat' };
+    if (isToday(dueDate)) return { color: 'text-orange-600', label: 'Jatuh Tempo Hari Ini' };
+    return { color: 'text-gray-600', label: 'Mendatang' };
   };
 
   const filteredTasks = tasks
@@ -187,18 +186,18 @@ const Index = () => {
         {/* Header */}
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            {activeTab === 'home' ? 'Today\'s Tasks' : 'Task History'}
+            {activeTab === 'home' ? 'Tugas Hari Ini' : 'Riwayat Tugas'}
           </h1>
           {activeTab === 'home' && (
             <div className="flex justify-center gap-4 text-sm text-gray-600">
               <span className="flex items-center gap-1">
                 <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                {todaysTasks.length} due today
+                {todaysTasks.length} jatuh tempo hari ini
               </span>
               {overdueTasks.length > 0 && (
                 <span className="flex items-center gap-1">
                   <AlertCircle className="w-3 h-3 text-red-500" />
-                  {overdueTasks.length} overdue
+                  {overdueTasks.length} terlambat
                 </span>
               )}
             </div>
@@ -224,9 +223,9 @@ const Index = () => {
                 <p>
                   {activeTab === 'home' 
                     ? searchTerm || selectedCategory !== 'all' 
-                      ? 'No tasks match your search criteria'
-                      : 'No active tasks. Add your first task!'
-                    : 'No completed tasks yet'
+                      ? 'Tidak ada tugas yang sesuai dengan pencarian'
+                      : 'Tidak ada tugas aktif. Tambahkan tugas pertama Anda!'
+                    : 'Belum ada tugas yang selesai'
                   }
                 </p>
               </CardContent>

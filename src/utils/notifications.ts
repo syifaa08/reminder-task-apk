@@ -22,8 +22,8 @@ export const scheduleTaskNotification = async (
       await LocalNotifications.schedule({
         notifications: [
           {
-            title: 'Task Reminder',
-            body: `${title} is due in ${reminderMinutes} minutes${description ? `: ${description}` : ''}`,
+            title: 'Pengingat Tugas',
+            body: `${title} akan jatuh tempo dalam ${reminderMinutes} menit${description ? `: ${description}` : ''}`,
             id: parseInt(taskId),
             schedule: { at: reminderTime },
             sound: 'default',

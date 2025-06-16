@@ -27,22 +27,22 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ settings, onSettingsChange 
   };
 
   const reminderOptions = [
-    { value: 5, label: '5 minutes' },
-    { value: 15, label: '15 minutes' },
-    { value: 30, label: '30 minutes' },
-    { value: 60, label: '1 hour' },
-    { value: 1440, label: '1 day' },
+    { value: 5, label: '5 menit' },
+    { value: 15, label: '15 menit' },
+    { value: 30, label: '30 menit' },
+    { value: 60, label: '1 jam' },
+    { value: 1440, label: '1 hari' },
   ];
 
   return (
     <div className="p-4 pb-20 space-y-4">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Settings</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">Pengaturan</h1>
       
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Sun className="w-5 h-5" />
-            App Theme
+            Tema Aplikasi
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -53,7 +53,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ settings, onSettingsChange 
               className="flex-1"
             >
               <Sun className="w-4 h-4 mr-2" />
-              Light
+              Terang
             </Button>
             <Button
               variant={localSettings.theme === 'dark' ? 'default' : 'outline'}
@@ -61,7 +61,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ settings, onSettingsChange 
               className="flex-1"
             >
               <Moon className="w-4 h-4 mr-2" />
-              Dark
+              Gelap
             </Button>
           </div>
         </CardContent>
@@ -71,7 +71,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ settings, onSettingsChange 
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="w-5 h-5" />
-            Default Reminder Time
+            Waktu Pengingat Default
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -85,7 +85,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ settings, onSettingsChange 
           >
             {reminderOptions.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label} before
+                {option.label} sebelumnya
               </option>
             ))}
           </select>
@@ -96,12 +96,12 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ settings, onSettingsChange 
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Bell className="w-5 h-5" />
-            Notifications
+            Notifikasi
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">Enable push notifications</span>
+            <span className="text-sm text-gray-600">Aktifkan notifikasi push</span>
             <Button
               variant={localSettings.notificationsEnabled ? 'default' : 'outline'}
               size="sm"
@@ -110,7 +110,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ settings, onSettingsChange 
                 notificationsEnabled: !localSettings.notificationsEnabled 
               })}
             >
-              {localSettings.notificationsEnabled ? 'Enabled' : 'Disabled'}
+              {localSettings.notificationsEnabled ? 'Aktif' : 'Nonaktif'}
             </Button>
           </div>
         </CardContent>
@@ -120,7 +120,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ settings, onSettingsChange 
         onClick={handleSave}
         className="w-full bg-blue-600 hover:bg-blue-700 text-white"
       >
-        Save Settings
+        Simpan Pengaturan
       </Button>
     </div>
   );

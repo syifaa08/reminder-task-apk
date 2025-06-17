@@ -1,10 +1,11 @@
 
 import React, { useState } from 'react';
-import { Calendar as CalendarIcon, ListTodo, Plus } from 'lucide-react';
+import { Calendar as CalendarIcon, ListTodo, Plus, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { format, isToday, isPast } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
+import { format, isToday, isPast, isSameDay, compareAsc } from 'date-fns';
 import { id } from 'date-fns/locale';
 import TaskFormNew from './TaskFormNew';
 
@@ -28,6 +29,7 @@ const MainApp: React.FC<MainAppProps> = ({ userName }) => {
   const [filterStatus, setFilterStatus] = useState<'aktif' | 'selesai'>('aktif');
   const [tasks, setTasks] = useState<Task[]>([]);
   const [showTaskForm, setShowTaskForm] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -48,15 +50,32 @@ const MainApp: React.FC<MainAppProps> = ({ userName }) => {
   };
 
   const getUrgencyInfo = (deadline: Date, completed: boolean) => {
-    if (completed) return { color: 'text-green-600', label: 'Selesai' };
-    if (isPast(deadline) && !isToday(deadline)) return { color: 'text-red-600', label: 'Terlambat' };
-    if (isToday(deadline)) return { color: 'text-orange-600', label: 'Hari Ini' };
-    return { color: 'text-gray-600', label: 'Mendatang' };
+    if (completed) return { color: 'text-green-600', label: 'Selesai', icon: CheckCircle };
+    if (isPast(deadline) && !isToday(deadline)) return { color: 'text-red-600', label: 'Terlambat', icon: AlertCircle };
+    if (isToday(deadline)) return { color: 'text-orange-600', label: 'Hari Ini', icon: Clock };
+    return { color: 'text-gray-600', label: 'Mendatang', icon: Clock };
   };
 
+  // Filter tasks for Tugasku tab
   const filteredTasks = tasks.filter(task => 
     filterStatus === 'aktif' ? !task.completed : task.completed
   );
+
+  // Sort tasks for Tugasku tab
+  const sortedTasks = [...filteredTasks].sort((a, b) => {
+    if (filterStatus === 'aktif') {
+      // For active tasks, sort by deadline (nearest first)
+      return compareAsc(a.deadline, b.deadline);
+    } else {
+      // For completed tasks, sort by completion date (newest first) - using deadline as proxy
+      return compareAsc(b.deadline, a.deadline);
+    }
+  });
+
+  // Filter tasks for selected date in Kalender tab
+  const tasksForSelectedDate = tasks
+    .filter(task => isSameDay(task.deadline, selectedDate))
+    .sort((a, b) => compareAsc(a.deadline, b.deadline));
 
   const addTask = (taskData: any) => {
     const newTask: Task = {
@@ -77,6 +96,77 @@ const MainApp: React.FC<MainAppProps> = ({ userName }) => {
     setTasks(prev => prev.map(task => 
       task.id === id ? { ...task, completed: !task.completed } : task
     ));
+  };
+
+  const renderTaskCard = (task: Task, showDate: boolean = false) => {
+    const urgencyInfo = getUrgencyInfo(task.deadline, task.completed);
+    const StatusIcon = urgencyInfo.icon;
+    
+    return (
+      <Card 
+        key={task.id} 
+        className={`border-0 shadow-sm transition-all duration-200 hover:shadow-md ${
+          task.completed 
+            ? 'bg-gray-50/80 backdrop-blur-sm' 
+            : 'bg-white/80 backdrop-blur-sm'
+        }`}
+      >
+        <CardContent className="p-4">
+          <div className="flex items-start gap-3">
+            {/* Checkbox */}
+            <button
+              onClick={() => toggleTask(task.id)}
+              className={`mt-1 p-1 h-6 w-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                task.completed 
+                  ? 'bg-green-500 border-green-500 text-white' 
+                  : 'border-gray-300 hover:border-green-500'
+              }`}
+            >
+              {task.completed && '✓'}
+            </button>
+
+            {/* Task Content */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-2">
+                <span className={`font-medium ${
+                  task.completed ? 'line-through text-gray-500' : 'text-gray-800'
+                }`}>
+                  {task.subject}
+                </span>
+                <Badge 
+                  variant="outline" 
+                  className={`text-xs ${getPriorityColor(task.priority)}`}
+                >
+                  {getPriorityIcon(task.priority)} {task.priority.toUpperCase()}
+                </Badge>
+              </div>
+              
+              <p className={`text-sm mb-2 ${
+                task.completed ? 'text-gray-400' : 'text-gray-600'
+              }`}>
+                {task.type}: {task.title}
+              </p>
+              
+              <div className="flex items-center gap-3 text-xs">
+                <div className={`flex items-center gap-1 ${urgencyInfo.color}`}>
+                  <StatusIcon className="w-3 h-3" />
+                  <span>{urgencyInfo.label}</span>
+                </div>
+                <div className="flex items-center gap-1 text-gray-500">
+                  <CalendarIcon className="w-3 h-3" />
+                  <span>
+                    {showDate 
+                      ? format(task.deadline, 'dd MMM yyyy, HH:mm', { locale: id })
+                      : format(task.deadline, 'HH:mm', { locale: id })
+                    }
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
   };
 
   return (
@@ -114,101 +204,89 @@ const MainApp: React.FC<MainAppProps> = ({ userName }) => {
           </button>
         </div>
 
-        {/* Filter Buttons */}
-        <div className="flex gap-2 mb-6">
-          <Button
-            variant={filterStatus === 'aktif' ? "default" : "outline"}
-            onClick={() => setFilterStatus('aktif')}
-            className={`${filterStatus === 'aktif' ? 'bg-blue-600' : ''}`}
-          >
-            Aktif
-          </Button>
-          <Button
-            variant={filterStatus === 'selesai' ? "default" : "outline"}
-            onClick={() => setFilterStatus('selesai')}
-            className={`${filterStatus === 'selesai' ? 'bg-blue-600' : ''}`}
-          >
-            Selesai
-          </Button>
-        </div>
-
-        {/* Tasks List */}
-        <div className="space-y-3 mb-20">
-          {filteredTasks.length === 0 ? (
-            <Card className="border-0 bg-white/60 backdrop-blur-sm">
-              <CardContent className="p-8 text-center text-gray-500">
-                <div className="text-4xl mb-4">📋</div>
-                <p>
-                  {filterStatus === 'aktif' 
-                    ? 'Belum ada tugas aktif. Tambahkan tugas pertamamu!' 
-                    : 'Belum ada tugas yang selesai'
-                  }
-                </p>
+        {/* Calendar Tab Content */}
+        {activeTab === 'kalender' && (
+          <div className="space-y-6 mb-20">
+            {/* Calendar Widget */}
+            <Card className="border-0 bg-white/80 backdrop-blur-sm shadow-sm">
+              <CardContent className="p-4">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => date && setSelectedDate(date)}
+                  locale={id}
+                  className="w-full"
+                />
               </CardContent>
             </Card>
-          ) : (
-            filteredTasks.map((task) => {
-              const urgencyInfo = getUrgencyInfo(task.deadline, task.completed);
-              
-              return (
-                <Card 
-                  key={task.id} 
-                  className={`border-0 shadow-sm transition-all duration-200 hover:shadow-md ${
-                    task.completed 
-                      ? 'bg-gray-50/80 backdrop-blur-sm' 
-                      : 'bg-white/80 backdrop-blur-sm'
-                  }`}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      {/* Checkbox */}
-                      <button
-                        onClick={() => toggleTask(task.id)}
-                        className={`mt-1 p-1 h-6 w-6 rounded-full border-2 flex items-center justify-center ${
-                          task.completed 
-                            ? 'bg-green-500 border-green-500 text-white' 
-                            : 'border-gray-300 hover:border-green-500'
-                        }`}
-                      >
-                        {task.completed && '✓'}
-                      </button>
 
-                      {/* Task Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className={`font-medium ${
-                            task.completed ? 'line-through text-gray-500' : 'text-gray-800'
-                          }`}>
-                            {task.subject}
-                          </span>
-                          <Badge 
-                            variant="outline" 
-                            className={`text-xs ${getPriorityColor(task.priority)}`}
-                          >
-                            {getPriorityIcon(task.priority)} {task.priority.toUpperCase()}
-                          </Badge>
-                        </div>
-                        
-                        <p className={`text-sm mb-2 ${
-                          task.completed ? 'text-gray-400' : 'text-gray-600'
-                        }`}>
-                          {task.type}: {task.title}
-                        </p>
-                        
-                        <div className={`flex items-center gap-1 text-xs ${urgencyInfo.color}`}>
-                          <CalendarIcon className="w-3 h-3" />
-                          <span>
-                            {format(task.deadline, 'dd MMM yyyy, HH:mm', { locale: id })}
-                          </span>
-                        </div>
-                      </div>
+            {/* Selected Date Tasks */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                Tugas untuk {format(selectedDate, 'dd MMMM yyyy', { locale: id })}
+              </h3>
+              
+              <div className="space-y-3">
+                {tasksForSelectedDate.length === 0 ? (
+                  <Card className="border-0 bg-white/60 backdrop-blur-sm">
+                    <CardContent className="p-8 text-center text-gray-500">
+                      <div className="text-4xl mb-4">📅</div>
+                      <p>Tidak ada tugas pada tanggal ini</p>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  tasksForSelectedDate.map((task) => renderTaskCard(task, false))
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tugasku Tab Content */}
+        {activeTab === 'tugasku' && (
+          <>
+            {/* Filter Buttons */}
+            <div className="flex gap-2 mb-6">
+              <Button
+                variant={filterStatus === 'aktif' ? "default" : "outline"}
+                onClick={() => setFilterStatus('aktif')}
+                className={`${filterStatus === 'aktif' ? 'bg-blue-600' : ''}`}
+              >
+                <Clock className="w-4 h-4 mr-2" />
+                Aktif ({tasks.filter(t => !t.completed).length})
+              </Button>
+              <Button
+                variant={filterStatus === 'selesai' ? "default" : "outline"}
+                onClick={() => setFilterStatus('selesai')}
+                className={`${filterStatus === 'selesai' ? 'bg-blue-600' : ''}`}
+              >
+                <CheckCircle className="w-4 h-4 mr-2" />
+                Selesai ({tasks.filter(t => t.completed).length})
+              </Button>
+            </div>
+
+            {/* Tasks List */}
+            <div className="space-y-3 mb-20">
+              {sortedTasks.length === 0 ? (
+                <Card className="border-0 bg-white/60 backdrop-blur-sm">
+                  <CardContent className="p-8 text-center text-gray-500">
+                    <div className="text-4xl mb-4">
+                      {filterStatus === 'aktif' ? '📋' : '✅'}
                     </div>
+                    <p>
+                      {filterStatus === 'aktif' 
+                        ? 'Belum ada tugas aktif. Tambahkan tugas pertamamu!' 
+                        : 'Belum ada tugas yang selesai'
+                      }
+                    </p>
                   </CardContent>
                 </Card>
-              );
-            })
-          )}
-        </div>
+              ) : (
+                sortedTasks.map((task) => renderTaskCard(task, true))
+              )}
+            </div>
+          </>
+        )}
 
         {/* Floating Add Button */}
         <button
